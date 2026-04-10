@@ -316,7 +316,6 @@ components:
           description: Unique identifier of the patient
         date:
           type: string
-          format: date
           example: "2026-04-10"
           description: Date of the visit
         time:
