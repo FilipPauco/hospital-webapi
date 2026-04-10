@@ -1,0 +1,419 @@
+openapi: 3.0.0
+servers:
+  - description: Cluster Endpoint
+    url: /api
+info:
+  description: Hospital Ward management for Web-In-Cloud system
+  version: "1.0.0"
+  title: Hospital Ward Api
+  contact:
+    email: xpaucof@stuba.sk
+  license:
+    name: CC BY 4.0
+    url: "https://creativecommons.org/licenses/by/4.0/"
+tags:
+  - name: visits
+    description: Hospital Ward Visits API
+  - name: beds
+    description: Hospital Ward Beds API
+paths:
+  "/ward/{wardId}/visits":
+    get:
+      tags:
+        - visits
+      summary: Provides the list of visits for a ward
+      operationId: getVisits
+      parameters:
+        - in: path
+          name: wardId
+          description: pass the id of the particular ward
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: list of visits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Visit"
+              examples:
+                response:
+                  $ref: "#/components/examples/VisitsExample"
+        "404":
+          description: Ward with such ID does not exist
+    post:
+      tags:
+        - visits
+      summary: Creates a new visit for a ward
+      operationId: createVisit
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Visit"
+            examples:
+              request-sample:
+                $ref: "#/components/examples/VisitExample"
+        required: true
+      responses:
+        "200":
+          description: the created visit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visit"
+        "400":
+          description: Missing mandatory properties of input object.
+        "404":
+          description: Ward with such ID does not exist
+        "409":
+          description: Visit with the specified id already exists
+  "/ward/{wardId}/visits/{visitId}":
+    get:
+      tags:
+        - visits
+      summary: Provides details about a visit
+      operationId: getVisit
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: visitId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: visit details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visit"
+        "404":
+          description: Ward or Visit with such ID does not exist
+    put:
+      tags:
+        - visits
+      summary: Updates a specific visit
+      operationId: updateVisit
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: visitId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Visit"
+        required: true
+      responses:
+        "200":
+          description: updated visit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visit"
+        "403":
+          description: Visit ID mismatch.
+        "404":
+          description: Ward or Visit with such ID does not exist
+    delete:
+      tags:
+        - visits
+      summary: Deletes a specific visit
+      operationId: deleteVisit
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: visitId
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Visit deleted
+        "404":
+          description: Ward or Visit with such ID does not exist
+  "/ward/{wardId}/beds":
+    get:
+      tags:
+        - beds
+      summary: Provides the list of beds for a ward
+      operationId: getBeds
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: list of beds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Bed"
+              examples:
+                response:
+                  $ref: "#/components/examples/BedsExample"
+        "404":
+          description: Ward with such ID does not exist
+    post:
+      tags:
+        - beds
+      summary: Creates a new bed in a ward
+      operationId: createBed
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Bed"
+            examples:
+              request-sample:
+                $ref: "#/components/examples/BedExample"
+        required: true
+      responses:
+        "200":
+          description: the created bed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bed"
+        "400":
+          description: Missing mandatory properties of input object.
+        "404":
+          description: Ward with such ID does not exist
+        "409":
+          description: Bed with the specified id already exists
+  "/ward/{wardId}/beds/{bedId}":
+    get:
+      tags:
+        - beds
+      summary: Provides details about a bed
+      operationId: getBed
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: bedId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: bed details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bed"
+        "404":
+          description: Ward or Bed with such ID does not exist
+    put:
+      tags:
+        - beds
+      summary: Updates a specific bed
+      operationId: updateBed
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: bedId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Bed"
+        required: true
+      responses:
+        "200":
+          description: updated bed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bed"
+        "403":
+          description: Bed ID mismatch.
+        "404":
+          description: Ward or Bed with such ID does not exist
+    delete:
+      tags:
+        - beds
+      summary: Deletes a specific bed
+      operationId: deleteBed
+      parameters:
+        - in: path
+          name: wardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: bedId
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Bed deleted
+        "404":
+          description: Ward or Bed with such ID does not exist
+components:
+  schemas:
+    Visit:
+      type: object
+      required:
+        - id
+        - patientId
+        - date
+        - time
+      properties:
+        id:
+          type: string
+          example: "x321ab3"
+          description: Unique id of the visit
+        patientId:
+          type: string
+          example: "460527-jozef-pucik"
+          description: Unique identifier of the patient
+        date:
+          type: string
+          format: date
+          example: "2026-04-10"
+          description: Date of the visit
+        time:
+          type: string
+          example: "14:30"
+          description: Time of the visit (HH:MM)
+        doctors:
+          type: array
+          items:
+            type: string
+          example: ["Dr. Novák", "Dr. Kováč"]
+          description: List of attending doctors
+        clinicalNotes:
+          type: string
+          example: "Patient recovering well."
+          description: Clinical notes from the visit
+    Bed:
+      type: object
+      required:
+        - id
+        - number
+        - status
+      properties:
+        id:
+          type: string
+          example: "bed-101"
+          description: Unique id of the bed
+        number:
+          type: string
+          example: "101"
+          description: Bed/room number
+        status:
+          type: string
+          enum:
+            - free
+            - occupied
+            - out-of-service
+          example: "free"
+          description: Current status of the bed
+        patientId:
+          type: string
+          example: "460527-jozef-pucik"
+          description: ID of the patient currently in the bed (if occupied)
+    Ward:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          example: "bobulova-ward"
+          description: Unique identifier of the ward
+        name:
+          type: string
+          example: "Oddelenie Dr. Bobulová"
+          description: Human readable name of the ward
+        visits:
+          type: array
+          items:
+            $ref: "#/components/schemas/Visit"
+        beds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Bed"
+  examples:
+    VisitExample:
+      summary: A sample visit
+      value:
+        id: "x321ab3"
+        patientId: "460527-jozef-pucik"
+        date: "2026-04-10"
+        time: "14:30"
+        doctors: ["Dr. Novák"]
+        clinicalNotes: "Routine checkup."
+    VisitsExample:
+      summary: List of visits
+      value:
+        - id: "x321ab3"
+          patientId: "460527-jozef-pucik"
+          date: "2026-04-10"
+          time: "14:30"
+          doctors: ["Dr. Novák"]
+          clinicalNotes: "Routine checkup."
+    BedExample:
+      summary: A sample bed
+      value:
+        id: "bed-101"
+        number: "101"
+        status: "free"
+    BedsExample:
+      summary: List of beds
+      value:
+        - id: "bed-101"
+          number: "101"
+          status: "free"
+        - id: "bed-102"
+          number: "102"
+          status: "occupied"
+          patientId: "460527-jozef-pucik"

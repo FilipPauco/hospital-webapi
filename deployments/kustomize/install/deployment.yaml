@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xpaucof-hospital-webapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      pod: xpaucof-hospital-webapi-label
+  template:
+    metadata:
+      labels:
+        pod: xpaucof-hospital-webapi-label
+    spec:
+      volumes:
+      - name: init-scripts
+        configMap:
+          name: xpaucof-hospital-webapi-mongodb-init
+      initContainers:
+      - name: init-mongodb
+        image: mongo:latest
+        imagePullPolicy: Always
+        command: ['mongosh', "--nodb", '-f', '/scripts/init-db.js']
+        volumeMounts:
+        - name: init-scripts
+          mountPath: /scripts
+        env:
+          - name: HOSPITAL_API_PORT
+            value: "8080"
+          - name: HOSPITAL_API_MONGODB_HOST
+            value: mongodb
+          - name: HOSPITAL_API_MONGODB_PORT
+            value: "27017"
+          - name: HOSPITAL_API_MONGODB_USERNAME
+            value: ""
+          - name: HOSPITAL_API_MONGODB_PASSWORD
+            value: ""
+          - name: HOSPITAL_API_MONGODB_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: xpaucof-hospital-webapi-config
+                key: database
+          - name: HOSPITAL_API_MONGODB_COLLECTION
+            valueFrom:
+              configMapKeyRef:
+                name: xpaucof-hospital-webapi-config
+                key: collection
+          - name: RETRY_CONNECTION_SECONDS
+            value: "5"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "0.01"
+          limits:
+            memory: "256Mi"
+            cpu: "0.1"
+      containers:
+      - name: xpaucof-hospital-webapi-container
+        image: fipaaa/hospital-webapi:latest
+        imagePullPolicy: Always
+        ports:
+        - name: webapi-port
+          containerPort: 8080
+        - name: openapi-ui-port
+          containerPort: 8081
+        env:
+          - name: HOSPITAL_API_PORT
+            value: "8080"
+          - name: HOSPITAL_API_MONGODB_HOST
+            value: mongodb
+          - name: HOSPITAL_API_MONGODB_PORT
+            value: "27017"
+          - name: HOSPITAL_API_MONGODB_USERNAME
+            value: ""
+          - name: HOSPITAL_API_MONGODB_PASSWORD
+            value: ""
+          - name: HOSPITAL_API_MONGODB_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: xpaucof-hospital-webapi-config
+                key: database
+          - name: HOSPITAL_API_MONGODB_COLLECTION
+            valueFrom:
+              configMapKeyRef:
+                name: xpaucof-hospital-webapi-config
+                key: collection
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "0.01"
+          limits:
+            memory: "256Mi"
+            cpu: "0.3"
+      - name: openapi-ui
+        image: swaggerapi/swagger-ui
+        imagePullPolicy: Always
+        ports:
+        - name: openapi-ui
+          containerPort: 8081
+        env:
+          - name: PORT
+            value: "8081"
+          - name: URL
+            value: /xpaucof-openapi
+          - name: BASE_URL
+            value: /xpaucof-hospital-openapi-ui
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "0.01"
+          limits:
+            memory: "128Mi"
+            cpu: "0.1"
