@@ -29,6 +29,9 @@ jobs:
         input: api/hospital.openapi.yaml
         additional-properties: apiPath=internal/hospital_wl,packageName=hospital_wl,interfaceOnly=true
 
+    - name: Update go.mod and go.sum
+      run: go mod tidy
+
     - name: Build
       run: go build -v ./cmd/hospital-api-service
 
