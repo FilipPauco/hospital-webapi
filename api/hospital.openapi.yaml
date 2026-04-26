@@ -303,6 +303,7 @@ components:
       required:
         - id
         - patientId
+        - bedId
         - date
         - time
       properties:
@@ -314,6 +315,10 @@ components:
           type: string
           example: "460527-jozef-pucik"
           description: Unique identifier of the patient
+        bedId:
+          type: string
+          example: "bed-101"
+          description: Unique identifier of the bed where visit took place
         date:
           type: string
           example: "2026-04-10"
@@ -387,6 +392,7 @@ components:
       value:
         id: "x321ab3"
         patientId: "460527-jozef-pucik"
+        bedId: "bed-101"
         date: "2026-04-10"
         time: "14:30"
         doctors: ["Dr. Novák"]
@@ -396,6 +402,7 @@ components:
       value:
         - id: "x321ab3"
           patientId: "460527-jozef-pucik"
+          bedId: "bed-101"
           date: "2026-04-10"
           time: "14:30"
           doctors: ["Dr. Novák"]

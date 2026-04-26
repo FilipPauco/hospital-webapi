@@ -44,6 +44,24 @@ func (o implVisitsAPI) CreateVisit(c *gin.Context) {
 			}, http.StatusBadRequest
 		}
 
+		if visit.BedId == "" {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Bed ID is required",
+			}, http.StatusBadRequest
+		}
+
+		bedIndx := slices.IndexFunc(ward.Beds, func(b Bed) bool {
+			return b.Id == visit.BedId
+		})
+
+		if bedIndx < 0 {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Selected bed does not exist in the ward",
+			}, http.StatusBadRequest
+		}
+
 		if visit.Date == "" {
 			return nil, gin.H{
 				"status":  http.StatusBadRequest,
@@ -115,6 +133,24 @@ func (o implVisitsAPI) UpdateVisit(c *gin.Context) {
 				"status":  http.StatusForbidden,
 				"message": "Visit ID in request body does not match path parameter",
 			}, http.StatusForbidden
+		}
+
+		if visit.BedId == "" {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Bed ID is required",
+			}, http.StatusBadRequest
+		}
+
+		bedIndx := slices.IndexFunc(ward.Beds, func(b Bed) bool {
+			return b.Id == visit.BedId
+		})
+
+		if bedIndx < 0 {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Selected bed does not exist in the ward",
+			}, http.StatusBadRequest
 		}
 
 		visit.Id = visitId
