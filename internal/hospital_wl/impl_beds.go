@@ -11,6 +11,19 @@ import (
 type implBedsAPI struct {
 }
 
+var allowedBedDepartments = map[string]struct{}{
+	"interne":         {},
+	"chirurgicke":     {},
+	"urgentny-prijem": {},
+	"novorodenecke":   {},
+	"urazove":         {},
+}
+
+func isValidBedDepartment(department string) bool {
+	_, ok := allowedBedDepartments[department]
+	return ok
+}
+
 func NewBedsApi() BedsAPI {
 	return &implBedsAPI{}
 }
@@ -20,6 +33,17 @@ func (o implBedsAPI) GetBeds(c *gin.Context) {
 		result := ward.Beds
 		if result == nil {
 			result = []Bed{}
+		}
+		changed := false
+		for i := range result {
+			if result[i].Department == "" {
+				result[i].Department = "interne"
+				changed = true
+			}
+		}
+		if changed {
+			ward.Beds = result
+			return ward, result, http.StatusOK
 		}
 		return nil, result, http.StatusOK
 	})
@@ -46,6 +70,15 @@ func (o implBedsAPI) CreateBed(c *gin.Context) {
 
 		if bed.Status == "" {
 			bed.Status = "free"
+		}
+		if bed.Department == "" {
+			bed.Department = "interne"
+		}
+		if !isValidBedDepartment(bed.Department) {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Invalid bed department",
+			}, http.StatusBadRequest
 		}
 
 		if bed.Id == "" || bed.Id == "@new" {
@@ -82,8 +115,13 @@ func (o implBedsAPI) GetBed(c *gin.Context) {
 				"message": "Bed not found",
 			}, http.StatusNotFound
 		}
-
-		return nil, ward.Beds[bedIndx], http.StatusOK
+		bed := ward.Beds[bedIndx]
+		if bed.Department == "" {
+			bed.Department = "interne"
+			ward.Beds[bedIndx] = bed
+			return ward, bed, http.StatusOK
+		}
+		return nil, bed, http.StatusOK
 	})
 }
 
@@ -105,6 +143,16 @@ func (o implBedsAPI) UpdateBed(c *gin.Context) {
 				"status":  http.StatusForbidden,
 				"message": "Bed ID in request body does not match path parameter",
 			}, http.StatusForbidden
+		}
+		
+		if bed.Department == "" {
+			bed.Department = "interne"
+		}
+		if !isValidBedDepartment(bed.Department) {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "Invalid bed department",
+			}, http.StatusBadRequest
 		}
 
 		bed.Id = bedId

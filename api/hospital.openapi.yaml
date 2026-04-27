@@ -343,6 +343,7 @@ components:
         - id
         - number
         - status
+        - department
       properties:
         id:
           type: string
@@ -360,6 +361,16 @@ components:
             - out-of-service
           example: "free"
           description: Current status of the bed
+        department:
+          type: string
+          enum:
+            - interne
+            - chirurgicke
+            - urgentny-prijem
+            - novorodenecke
+            - urazove
+          example: "interne"
+          description: Department where the bed belongs
         patientId:
           type: string
           example: "460527-jozef-pucik"
@@ -413,13 +424,16 @@ components:
         id: "bed-101"
         number: "101"
         status: "free"
+        department: "interne"
     BedsExample:
       summary: List of beds
       value:
         - id: "bed-101"
           number: "101"
           status: "free"
+          department: "interne"
         - id: "bed-102"
           number: "102"
           status: "occupied"
+          department: "chirurgicke"
           patientId: "460527-jozef-pucik"
